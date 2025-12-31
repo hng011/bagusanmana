@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = Field(default="INFO")
     
     # CORS
-    CORS_ORIGINS: list[str] = Field(default=["*"])
+    CORS_ORIGINS: list[str] = Field(...)
     CORS_CREDENTIALS: bool = Field(default=True)
     CORS_METHODS: list[str] = Field(default=["*"])
     CORS_HEADERS: list[str] = Field(default=["*"])
