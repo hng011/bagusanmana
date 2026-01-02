@@ -1,0 +1,83 @@
+name: Push to Docker Hub 
+
+on:
+  push:
+    branches:
+      - main
+  
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-dep: 0 # see all history
+      
+      # Checking if there is any exposed credentials
+      - name: Security check (ggshield)
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12 
+        env:
+          GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
+        run: |
+          pip install pipx
+          pipx install ggshield
+          ggshield secret scan path -r . -y exclude ".git/*"
+
+      # Update git tag for versioning 
+      - name: Update version
+        id: update_version
+        run: |
+          chmod +x .github/pipeline-scripts/bump_version.yaml
+          ./.github/scripts/bump_version.sh
+
+      # Commit & Tag
+      - name: Push new version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_TAG=${{ steps.update_version.outputs.new_tag }}
+
+          # Github Robot Config
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Update tag
+          git tag $NEW_TAG
+          git push origin $NEW_TAG
+
+      # Create GitHub Release (changelog)
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_TAG=${{ steps.update_version.outputs.new_tag }}
+          gh release create $NEW_TAG --generate-notes --title "Release $NEW_TAG"
+
+      # Login Dockerhub
+      - name: Login to Docker Hub
+        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PAT }}
+
+      # Push to Docker Hub
+      - name: Build and push docker image to Docker Hub
+        run: |
+          # Get version
+          VERSION=${{ steps.update_version.outputs.new_tag }}
+
+          # Build image
+          docker build \ 
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:$VERSION \ 
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:latest \ 
+          .
+
+          # Push image
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:$VERSION
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:latest

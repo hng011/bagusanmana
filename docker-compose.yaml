@@ -1,0 +1,7 @@
+services:
+  bagusanmana:
+    image: bagusanmana:0.1.0
+    build: ./
+    env_file: ./.env
+    ports:
+      - 6969:8000
