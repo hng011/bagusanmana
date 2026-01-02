@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     HATE_SPEECH_SETTING: str = Field(default="BLOCK_LOW_AND_ABOVE")
     SEXUALLY_EXPLICIT_SETTING: str = Field(default="BLOCK_LOW_AND_ABOVE")
     DANGEROUS_CONTENT_SETTING: str = Field(default="BLOCK_LOW_AND_ABOVE")
+    IMAGE_COMPARATOR_SYSTEM_PROMPT: str = Field(default="Choose one")
     
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -5,7 +5,7 @@ from typing import Optional
 from google import genai
 from google.genai import types
 
-from ai.pembungkus_ai.secret_system_prompts.image_comparator_system_prompt import system_prompt 
+# from ai.pembungkus_ai.secret_system_prompts.image_comparator_system_prompt import system_prompt 
 
 class ImageComparator:
     def __init__(self):
@@ -74,7 +74,7 @@ class ImageComparator:
             temperature=settings.TEMPERATURE,
             top_p=settings.TOP_P,
             max_output_tokens=settings.OUTPUT_LENGTH,
-            system_instruction=system_prompt,
+            system_instruction=settings.IMAGE_COMPARATOR_SYSTEM_PROMPT,
             response_mime_type="application/json",
             response_json_schema=self._response_json_schema,
         )
