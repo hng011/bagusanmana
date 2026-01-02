@@ -22,13 +22,16 @@ jobs:
         with:
           python-version: 3.12 
 
-      - name: Security check (ggshield)
+      - name: Install pipx
+        run: pip install pipx
+
+      - name: Install dependencies
+        run: pipx install ggshield
+
+      - name: Run ggshield scanner
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
-        run: |
-          pip install pipx
-          pipx install ggshield
-          ggshield secret scan path -r . -y exclude ".git/*"
+        run: ggshield secret scan path -r . -y --exclude ".git/*"
 
       # Update git tag for versioning 
       - name: Update version
