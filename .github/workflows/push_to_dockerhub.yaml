@@ -15,7 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-dep: 0 # see all history
+          fetch-depth: 0 # see all history
+          fetch-tags: true
       
       - name: Python setup
         uses: actions/setup-python@v5
