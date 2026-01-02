@@ -33,6 +33,13 @@ jobs:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
         run: ggshield secret scan path -r . -y --exclude ".git/*"
 
+        # Update version 
+      - name: Update version
+        id: update_version
+        run: |
+          chmod +x .github/pipeline-scripts/bump_version.sh
+          ./.github/pipeline-scripts/bump_version.sh
+
       # Create GitHub Release (changelog)
       - name: Create release
         env:
@@ -63,13 +70,6 @@ jobs:
           # Push image
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:$VERSION
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/bagusanmana:latest
-
-      # Update git tag for versioning 
-      - name: Update version
-        id: update_version
-        run: |
-          chmod +x .github/pipeline-scripts/bump_version.sh
-          ./.github/pipeline-scripts/bump_version.sh
 
       # Commit & Tag
       - name: Push new version
