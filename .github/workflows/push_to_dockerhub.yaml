@@ -17,11 +17,12 @@ jobs:
         with:
           fetch-dep: 0 # see all history
       
-      # Checking if there is any exposed credentials
-      - name: Security check (ggshield)
+      - name: Python setup
         uses: actions/setup-python@v5
         with:
           python-version: 3.12 
+
+      - name: Security check (ggshield)
         env:
           GITGUARDIAN_API_KEY: ${{ secrets.GITGUARDIAN_API_KEY }}
         run: |
