@@ -37,7 +37,7 @@ jobs:
       - name: Update version
         id: update_version
         run: |
-          chmod +x .github/pipeline-scripts/bump_version.yaml
+          chmod +x .github/pipeline-scripts/bump_version.sh
           ./.github/scripts/bump_version.sh
 
       # Commit & Tag
